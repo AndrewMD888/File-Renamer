@@ -3,7 +3,7 @@ README last updated by Andrew Dulichan on May 21, 2019
 
 # File-Renamer
 
-This is a script to rename filenames within a directory to be Operating System friendly across multiple OSes. Meant to help clean up filenames en masse. Written in Python 3.
+This is a script to rename filenames within a directory to be Operating System friendly across multiple OSes. Meant to help clean up filenames en masse. Written in Python 3. To run the program you can use an IDE or Python directly via the terminal on your computer.
 
 The file naming convention I chose is based on generally accepted guidelines across systems. No special characters, spaces, capital letters, etc. Separate words with underscores, and hyphens are allowed to remain in lieu of underscores.
 
