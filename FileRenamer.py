@@ -1,5 +1,5 @@
-# First created by Andrew Dulichan on February 19, 2018, last updated by Andrew Dulichan on May 24, 2019
-# SEE THE README IN MY REPOSITORY FOR DOCUMENTATION!
+# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on May 29, 2019
+# SEE THE README IN MY REPOSITORY FOR DOCUMENTATION
 
 import os, re
 
@@ -10,7 +10,6 @@ filename_dictionary = {}
 #-------------------------------------------------
 
 def my_rename(filename):
-
     # The blanket rules (find and replace cases) I came up with for how I want this program to function. Key-value pairs.
     dictionary_rules = {'"': '', "'": "", " ": "_", '`': '', "!": "", ";": "", "–": "-", "@": "_at", "#": "", "$": "", "%": "", "^": "", "&": "_and", "|": "_or", "(": "", ")": "", "{": "", "}": "", "[": "", "]": ""}
 
@@ -20,8 +19,8 @@ def my_rename(filename):
     # Compiling the dictionary for usage with the .sub (search and replace) function
     pattern = re.compile("|".join(my_dictionary.keys()))
     
-    # Search and replace action on the file_name string using the dictionary
-    temp_string = pattern.sub(lambda m: my_dictionary[re.escape(m.group(0))], file_name)
+    # Search and replace action on the filename string using the dictionary
+    temp_string = pattern.sub(lambda m: my_dictionary[re.escape(m.group(0))], filename)
 
     # Logic checks to see if the first group to match in the string is not alphanumeric
     # Program goes into this code block if the first character of the string is not alphanumeric
@@ -120,7 +119,7 @@ def my_rename(filename):
 # The script will execute successfully even if the file wasn't technically renamed (due to it not meeting one of the rules from the above function)
 # This means we have to write the code properly to print the messages we want properly
 
-directory = input("Enter the directory path in which you wish to have all filenames changed: ")
+directory = input("Enter the full directory path in which you wish to have all files renamed: ")
 
 # Loops through the files in a directory and if files are found, they are added to a variable
 # Then len() returns how many files were found in that variable, as an integer
@@ -134,6 +133,7 @@ if not directory_files:
 else:
     renamed_file_counter = 0
     non_renamed_file_counter = 0
+    filename_collision_counter = 1 # Offset to 1 to properly sync with the amount of filenames that collide
 
     for filename in directory_files:
         # Get the new filename according to what my_rename() specified
@@ -149,12 +149,22 @@ else:
         # Preserve the match of both filenames for the file
         filename_dictionary.update({filename:new_filename})
 
+        # if filenames collided, keep track of how many have the same name 
+        if len(new_filename_set) == current_set_size:
+            filename_collision_counter += 1
+
+        # While there is a filename collision, rename the necessary files
         # Only add non-duplicate filenames to the data collection
         while len(new_filename_set) == current_set_size:
             new_filename = "copy_of_" + new_filename
             new_filename_set.add(new_filename)
             filename_dictionary.update({filename:new_filename})
+
         #----------End of filename collision checking code-----------
+
+    # Let the user know if filename collision occurred, and how it was mitigated if so
+    if filename_collision_counter > 1:
+        print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. A 'copy_of_' prefix has been added to the necessary filenames to avoid errors.")
 
     for original_filename, new_filename in filename_dictionary.items():
         # This line actually actions the file renaming
@@ -164,7 +174,7 @@ else:
             non_renamed_file_counter += 1
 
         if original_filename == new_filename and num_files_in_directory == 1:
-            print("\nThe lone file named " + original_filename + " in the specified directory was not renamed, as this script was unnecessary for that file.")
+            print("\nThe lone file named " + original_filename + " in the specified directory was not renamed, as this script was unnecessary for that file.\n")
             break
 
         elif original_filename != new_filename:
@@ -173,10 +183,10 @@ else:
         renamed_file_counter += 1
 
     if (original_filename != new_filename and renamed_file_counter >= 1) or renamed_file_counter > non_renamed_file_counter:
-       print("\n" + str(renamed_file_counter - non_renamed_file_counter) + " file(s) renamed.")
+        print("\n" + str(renamed_file_counter - non_renamed_file_counter) + " file(s) renamed.")
 
     if non_renamed_file_counter >= 1 and num_files_in_directory > 1:
-       print("\n" + str(non_renamed_file_counter) + " file(s) in the specified directory were not renamed, as this script was unnecessary for them.")
+        print("\n" + str(non_renamed_file_counter) + " file(s) in the specified directory were not renamed, as this script was unnecessary for them.\n")
 
 #-------------------------------------------------
 #-----------End of script-------------------------
