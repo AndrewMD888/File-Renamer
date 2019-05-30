@@ -74,7 +74,7 @@ def my_rename(filename):
         # Converts the first character of the string to lowercase for replacement in the string later on
         start_of_string_formatter = str(save).lower()
 
-    # Checking to see temp_string5 and temp_string6 have certain characters in the second position
+    # Checking to see if temp_string5 and temp_string6 have certain characters in the second position
     if temp_string5[1] == "_" and temp_string6[1] != "_":
         # Removes underscores where necessary
         temp_string6 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', temp_string5)
@@ -95,6 +95,8 @@ def my_rename(filename):
 
     # The first character of the string in lowercase now replaces whatever character is in the first position at this point
     temp_string8 = re.sub(r'(^[A-Z]+)|(^([A-Z]+)([a-z]+\.))', start_of_string_formatter, temp_string7)
+    
+    print(temp_string8)
 
     # Inserts underscores between lowercase letters and capital words properly
     # The "r'\1\2_'" syntax is the proper way to add an underscore after capturing group 1 and 2
@@ -134,6 +136,8 @@ else:
     renamed_file_counter = 0
     non_renamed_file_counter = 0
     filename_collision_counter = 1 # Offset to 1 to properly sync with the amount of filenames that collide
+    suffix = "_copy_"
+    suffix_counter = 1
 
     for filename in directory_files:
         # Get the new filename according to what my_rename() specified
@@ -149,22 +153,24 @@ else:
         # Preserve the match of both filenames for the file
         filename_dictionary.update({filename:new_filename})
 
-        # if filenames collided, keep track of how many have the same name 
+        # Get the base filename and file extension of new_filename stored separately for later usage
+        root, ext = os.path.splitext(new_filename)
+
+        # If filenames collided, keep track of how many have the same name
+        # Make the new_filename contain the base filename, suffix, incremental counter and file extension. This finalizes the filename
+        # Add the new_filename to the set for later usage and update the dictionary entry for filename
         if len(new_filename_set) == current_set_size:
             filename_collision_counter += 1
-
-        # While there is a filename collision, rename the necessary files
-        # Only add non-duplicate filenames to the data collection
-        while len(new_filename_set) == current_set_size:
-            new_filename = "copy_of_" + new_filename
+            new_filename = root + suffix + str(suffix_counter) + ext
             new_filename_set.add(new_filename)
             filename_dictionary.update({filename:new_filename})
+            suffix_counter += 1
 
         #----------End of filename collision checking code-----------
 
     # Let the user know if filename collision occurred, and how it was mitigated if so
     if filename_collision_counter > 1:
-        print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. A 'copy_of_' prefix has been added to the necessary filenames to avoid errors.")
+        print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. An incremental suffix has been added to the necessary filenames to avoid errors.")
 
     for original_filename, new_filename in filename_dictionary.items():
         # This line actually actions the file renaming
