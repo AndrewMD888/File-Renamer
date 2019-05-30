@@ -95,8 +95,6 @@ def my_rename(filename):
 
     # The first character of the string in lowercase now replaces whatever character is in the first position at this point
     temp_string8 = re.sub(r'(^[A-Z]+)|(^([A-Z]+)([a-z]+\.))', start_of_string_formatter, temp_string7)
-    
-    print(temp_string8)
 
     # Inserts underscores between lowercase letters and capital words properly
     # The "r'\1\2_'" syntax is the proper way to add an underscore after capturing group 1 and 2
