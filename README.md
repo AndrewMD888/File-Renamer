@@ -1,4 +1,4 @@
-README last updated by Andrew Dulichan on May 25, 2019
+README last updated by Andrew Dulichan on May 30, 2019
 ------------------------------------------------------
 
 # File-Renamer
@@ -24,7 +24,6 @@ This project began as a way for me to get familiar with Python and regular expre
 **TO-DO LIST**
 
 1. Adjust program to append strings for the Regular Expression matches where necessary, not use replacement
-2. Use the same variable names for each temp_string variable, where appropriate, in order to save data space and be more efficient
-3. Expand the dictionary rules as needed to cover more cases and remove more troublesome characters
-4. Update to allow the user to rename one file and not just a whole directory. Make this program more efficient by cleaning up the regular expressions and seeing if anything can be removed/refactored
-5. Probably update to allow the user to choose what sort of dictionary rules they want via a mode selector for this program's behavior (rules pre-defined by me)
+2. Expand the dictionary rules as needed to cover more cases and remove more troublesome characters
+3. Update to allow the user to rename one file and not just a whole directory. Make this program more efficient by cleaning up the regular expressions and seeing if anything can be removed/refactored
+4. Probably update to allow the user to choose what sort of dictionary rules they want via a mode selector for this program's behavior (rules pre-defined by me)
