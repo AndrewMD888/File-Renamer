@@ -1,10 +1,7 @@
-# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on May 29, 2019
+# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on May 30, 2019
 # SEE THE README IN MY REPOSITORY FOR DOCUMENTATION
 
 import os, re
-
-new_filename_set = set()
-filename_dictionary = {}
 
 #----------Start of renaming function-------------
 #-------------------------------------------------
@@ -14,39 +11,39 @@ def my_rename(filename):
     dictionary_rules = {'"': '', "'": "", " ": "_", '`': '', "!": "", ";": "", "–": "-", "@": "_at", "#": "", "$": "", "%": "", "^": "", "&": "_and", "|": "_or", "(": "", ")": "", "{": "", "}": "", "[": "", "]": ""}
 
     # Create the actual dictionary for usage on strings
-    my_dictionary = dict((re.escape(k), v) for k, v in dictionary_rules.items())
+    my_dictionary = dict((re.escape(key), value) for key, value in dictionary_rules.items())
 
     # Compiling the dictionary for usage with the .sub (search and replace) function
     pattern = re.compile("|".join(my_dictionary.keys()))
     
     # Search and replace action on the filename string using the dictionary
-    temp_string = pattern.sub(lambda m: my_dictionary[re.escape(m.group(0))], filename)
+    usage_string1 = pattern.sub(lambda m: my_dictionary[re.escape(m.group(0))], filename)
 
     # Logic checks to see if the first group to match in the string is not alphanumeric
     # Program goes into this code block if the first character of the string is not alphanumeric
-    if re.match(r'(^[A-Z]+)|(^[a-z]+)|(^[0-9]+)', temp_string) is None:
+    if re.match(r'(^[A-Z]+)|(^[a-z]+)|(^[0-9]+)', usage_string1) is None:
         # If a match was not found (not alphanumeric), remove the non alphanumeric characters from the start of the string
-        start_of_string_trimmed = re.sub(r'^[^A-Za-z0-9]+', r'', temp_string)
+        start_of_string_trimmed = re.sub(r'^[^A-Za-z0-9]+', r'', usage_string1)
 
         # I chose 2 or more capital letters to match for below because this excludes first character capitalization, which is what I want here
-        temp_string2 = re.sub(r'(^[A-Z]{2,})', r'\1_', start_of_string_trimmed)
+        usage_string2 = re.sub(r'(^[A-Z]{2,})', r'\1_', start_of_string_trimmed)
 
         # Inserts an underscore after the capturing group only if there are two or more consecutive lowercase letters in that group
         # Done so that the formatting of version numbers (for example, v1.03.54) is left as is
-        temp_string3 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', temp_string2)
+        usage_string2 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', usage_string2)
 
-        temp_string4 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', temp_string3)
+        usage_string2 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', usage_string2)
 
         # Inserts an underscore after a sequence of 2 or more characters and before a number
-        temp_string5 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', temp_string4)
+        usage_string2 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', usage_string2)
 
         # Gets the first character of the string for later usage
-        save = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', temp_string5).group()
+        save = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', usage_string2).group()
 
-        # temp_string6 is not used in this conditional branch
-        # As such, I initialized temp_string6 to an empty list of two elements to avoid an exception in later conditional statements
+        # usage_string3 is not used in this conditional branch
+        # As such, I initialized usage_string3 to an empty list of two elements to avoid an exception in later conditional statements
         # Hardcoding works here due to those statement's conditions
-        temp_string6 = [None] * 2
+        usage_string3 = [None] * 2
 
         # Converts the first character of the string to lowercase for replacement in the string later on
         start_of_string_formatter = str(save).lower()
@@ -54,57 +51,57 @@ def my_rename(filename):
     # This code branch is used if the first character of the string is alphanumeric
     else:
         # I chose 2 or more capital letters to match for below because this excludes first character capitalization, which I want excluded here
-        temp_string2 = re.sub(r'(^[A-Z]{2,})', r'\1_', temp_string)
+        usage_string2 = re.sub(r'(^[A-Z]{2,})', r'\1_', usage_string1)
 
         # Gets the first character of the string for later usage
-        save = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', temp_string2).group()
+        save = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', usage_string2).group()
 
         # Inserts an underscore after the capturing group only if there are two or more consecutive lowercase letters in that group
         # Done so that the formatting of version numbers (for example, v1.03.54) is left as is
-        temp_string3 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', temp_string2)
+        usage_string2 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', usage_string2)
 
-        temp_string4 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', temp_string3)
+        usage_string2 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', usage_string2)
 
         # Inserts an underscore after a sequence of 2 or more characters and before a number
-        temp_string5 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', temp_string4)
+        usage_string2 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', usage_string2)
 
-        # temp_string6 is now populated and is the same value as temp_string5
-        temp_string6 = temp_string5
+        # usage_string3 is now populated and is the same value as usage_string2
+        usage_string3 = usage_string2
 
         # Converts the first character of the string to lowercase for replacement in the string later on
         start_of_string_formatter = str(save).lower()
 
-    # Checking to see if temp_string5 and temp_string6 have certain characters in the second position
-    if temp_string5[1] == "_" and temp_string6[1] != "_":
+    # Checking to see if usage_string2 and usage_string3 have certain characters in the second position
+    if usage_string2[1] == "_" and usage_string3[1] != "_":
         # Removes underscores where necessary
-        temp_string6 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', temp_string5)
+        usage_string3 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', usage_string2)
 
         # Appends an underscore into the correct place for capturing group 2 after removing prior undesirable underscores
-        temp_string7 = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', temp_string6)
+        final_string = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', usage_string3)
     
-    elif temp_string6[1] == "_":
+    elif usage_string3[1] == "_":
         # Removes underscores where necessary
-        temp_string6 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', temp_string5)
+        usage_string3 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', usage_string2)
 
         # Appends an underscore into the correct place after removing prior undesirable underscores
-        temp_string7 = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', temp_string6)
+        final_string = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', usage_string3)
 
     else:
-        # If everything was fine, we don't need temp_string6 and can put temp_string5's value directly into temp_string7 for the next steps
-        temp_string7 = temp_string5
+        # If everything was fine, we don't need usage_string3 and can put usage_string2's value directly into final_string for the next steps
+        final_string = usage_string2
 
     # The first character of the string in lowercase now replaces whatever character is in the first position at this point
-    temp_string8 = re.sub(r'(^[A-Z]+)|(^([A-Z]+)([a-z]+\.))', start_of_string_formatter, temp_string7)
+    final_string = re.sub(r'(^[A-Z]+)|(^([A-Z]+)([a-z]+\.))', start_of_string_formatter, final_string)
 
     # Inserts underscores between lowercase letters and capital words properly
     # The "r'\1\2_'" syntax is the proper way to add an underscore after capturing group 1 and 2
-    temp_string9 = re.sub(r'([a-z](?=[A-Z]))|([A-Z]{2,}(?=[a-z]))', r'\1\2_', temp_string8).lower()
+    final_string = re.sub(r'([a-z](?=[A-Z]))|([A-Z]{2,}(?=[a-z]))', r'\1\2_', final_string).lower()
 
     # Removes any remaining extraneous/unnecessary underscores from the entire string
-    temp_string10 = re.sub(r'((?<=[a-z])[_]+(?=[\.]))|((?<=[0-9])[_]+(?=[\.]))|((?<![a-z0-9])[_](?![A-Z]))', r'', temp_string9)
+    final_string = re.sub(r'((?<=[a-z])[_]+(?=[\.]))|((?<=[0-9])[_]+(?=[\.]))|((?<![a-z0-9])[_](?![A-Z]))', r'', final_string)
 
     # Removes any amount of underscores on either side of a hyphen to avoid multiple consecutive separator characters
-    final_string = re.sub(r'([_]{1,}(?=[-]))|((?<=[-])[_]{1,})', r'', temp_string10)
+    final_string = re.sub(r'([_]{1,}(?=[-]))|((?<=[-])[_]{1,})', r'', final_string)
 
     return final_string
 
@@ -135,44 +132,36 @@ else:
     non_renamed_file_counter = 0
     filename_collision_counter = 1 # Offset to 1 to properly sync with the amount of filenames that collide
     suffix = "_copy_"
-    suffix_counter = 1
+    suffix_counter = 1 # Start at 1 for better user-readability
 
-    for filename in directory_files:
+    for original_filename in directory_files:
         # Get the new filename according to what my_rename() specified
-        new_filename = my_rename(filename)
+        new_filename = my_rename(original_filename)
 
         #---------Start of filename collision checking code----------
+
         # Filename collision can happen when certain characters get stripped from the original filename(s) and multiple files then end up with the same name
         # This isn't allowed by the operating system and will cause a script error, so we need to check for this case and update the filenames appropriately if needed
-
-        current_set_size = len(new_filename_set)
-        new_filename_set.add(new_filename)
-
-        # Preserve the match of both filenames for the file
-        filename_dictionary.update({filename:new_filename})
 
         # Get the base filename and file extension of new_filename stored separately for later usage
         root, ext = os.path.splitext(new_filename)
 
-        # If filenames collided, keep track of how many have the same name
-        # Make the new_filename contain the base filename, suffix, incremental counter and file extension. This finalizes the filename
-        # Add the new_filename to the set for later usage and update the dictionary entry for filename
-        if len(new_filename_set) == current_set_size:
-            filename_collision_counter += 1
-            new_filename = root + suffix + str(suffix_counter) + ext
-            new_filename_set.add(new_filename)
-            filename_dictionary.update({filename:new_filename})
-            suffix_counter += 1
+        # Indefinite loop to keep trying to action the file renaming until it safely succeeds
+        # Once it succeeds, we break out of the loop and move on to the next file
+        # Allowing the FileExistsError to occur and handling it properly is an elegant solution for this problem
+        while True:
+            try:
+                # This line actually actions the file renaming
+                os.rename(os.path.join(directory, original_filename), os.path.join(directory, new_filename))
+                break
+            except FileExistsError:
+                # If filenames collided, keep track of how many have the same name
+                filename_collision_counter += 1
+                # Make the new_filename contain the base filename, suffix, incremental counter and file extension. This finalizes the filename
+                new_filename = root + suffix + str(suffix_counter) + ext
+                suffix_counter += 1
 
         #----------End of filename collision checking code-----------
-
-    # Let the user know if filename collision occurred, and how it was mitigated if so
-    if filename_collision_counter > 1:
-        print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. An incremental suffix has been added to the necessary filenames to avoid errors.")
-
-    for original_filename, new_filename in filename_dictionary.items():
-        # This line actually actions the file renaming
-        os.rename(os.path.join(directory, original_filename), os.path.join(directory, new_filename))
 
         if original_filename == new_filename:
             non_renamed_file_counter += 1
@@ -185,6 +174,10 @@ else:
             print("\n" + original_filename + " has been renamed to " + new_filename)
             
         renamed_file_counter += 1
+
+    # Let the user know if filename collision occurred, and how it was mitigated if so
+    if filename_collision_counter > 1:
+        print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. An incremental suffix has been added to the necessary filenames to avoid errors.")
 
     if (original_filename != new_filename and renamed_file_counter >= 1) or renamed_file_counter > non_renamed_file_counter:
         print("\n" + str(renamed_file_counter - non_renamed_file_counter) + " file(s) renamed.")
