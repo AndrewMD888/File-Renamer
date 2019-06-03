@@ -1,12 +1,18 @@
-# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on May 30, 2019
+#!/usr/bin/python3
+# -*- coding: utf-8 -*-
+
+# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on June 3, 2019
 # SEE THE README IN MY REPOSITORY FOR DOCUMENTATION
+
+# This program currently isn't compatible with Python 2, so line 1 ensures the user uses Python 3 if running via the terminal
+# I also specified the encoding set for this file, just in case
 
 import os, re
 
-#----------Start of renaming function-------------
-#-------------------------------------------------
+#------------Start of filename conversion function-------------
+#--------------------------------------------------------------
 
-def my_rename(filename):
+def filename_conversion(filename):
     # The blanket rules (find and replace cases) I came up with for how I want this program to function. Key-value pairs.
     dictionary_rules = {'"': '', "'": "", " ": "_", '`': '', "!": "", ";": "", "–": "-", "@": "_at", "#": "", "$": "", "%": "", "^": "", "&": "_and", "|": "_or", "(": "", ")": "", "{": "", "}": "", "[": "", "]": ""}
 
@@ -105,85 +111,93 @@ def my_rename(filename):
 
     return final_string
 
-#-------------------------------------------------
-#----------End of renaming function---------------
+#--------------------------------------------------------------
+#-------------End of filename conversion function--------------
 
-#-----------Start of script-----------------------
-#-------------------------------------------------
+#-----------------Start of renaming function-------------------
+#--------------------------------------------------------------
 
-# The print statements in the script are for user-friendliness 
-# The print statements' logic in the script relies upon a comparison between the old and new filename
-# The script will execute successfully even if the file wasn't technically renamed (due to it not meeting one of the rules from the above function)
+# The print statements in this function are for user-friendliness 
+# The print statements' logic in the function relies upon a comparison between the old and new filename
+# The function will execute successfully even if the file wasn't technically renamed (due to it not meeting one of the rules from the above function)
 # This means we have to write the code properly to print the messages we want properly
 
-directory = input("Enter the full directory path in which you wish to have all files renamed: ")
+def rename_files(directory):
+    # Loops through the files in a directory and if files are found, they are added to a variable
+    # Then len() returns how many files were found in that variable, as an integer
+    num_files_in_directory = len([files for files in os.listdir(directory) if os.path.isfile(os.path.join(directory, files))])
+    directory_files = os.listdir(directory)
 
-# Loops through the files in a directory and if files are found, they are added to a variable
-# Then len() returns how many files were found in that variable, as an integer
-num_files_in_directory = len([files for files in os.listdir(directory) if os.path.isfile(os.path.join(directory, files))])
-directory_files = os.listdir(directory)
+    # Error message if no files are found
+    if not directory_files:
+        print("\nYou entered a directory which has no files in it. Restart the program and try again.\n")
 
-# Error message if no files are found
-if not directory_files:
-    print("\nYou entered a directory which has no files in it. Restart the program and try again.")
+    else:
+        renamed_file_counter = 0
+        non_renamed_file_counter = 0
+        filename_collision_counter = 1 # Offset to 1 to properly sync with the amount of filenames that collide
+        suffix = "_copy_"
+        suffix_counter = 1 # Start at 1 for better user-readability
 
-else:
-    renamed_file_counter = 0
-    non_renamed_file_counter = 0
-    filename_collision_counter = 1 # Offset to 1 to properly sync with the amount of filenames that collide
-    suffix = "_copy_"
-    suffix_counter = 1 # Start at 1 for better user-readability
+        for original_filename in directory_files:
+            # Get the new filename according to what my_rename() specified
+            new_filename = filename_conversion(original_filename)
 
-    for original_filename in directory_files:
-        # Get the new filename according to what my_rename() specified
-        new_filename = my_rename(original_filename)
+            #---------Start of filename collision checking code----------
 
-        #---------Start of filename collision checking code----------
+            # Filename collision can happen when certain characters get stripped from the original filename(s) and multiple files then end up with the same name
+            # This isn't allowed by the operating system and will cause a script error, so we need to check for this case and update the filenames appropriately if needed
 
-        # Filename collision can happen when certain characters get stripped from the original filename(s) and multiple files then end up with the same name
-        # This isn't allowed by the operating system and will cause a script error, so we need to check for this case and update the filenames appropriately if needed
+            # Get the base filename and file extension of new_filename stored separately for later usage
+            root, ext = os.path.splitext(new_filename)
 
-        # Get the base filename and file extension of new_filename stored separately for later usage
-        root, ext = os.path.splitext(new_filename)
+            # Indefinite loop to keep trying to action the file renaming until it safely succeeds
+            # Once it succeeds, we break out of the loop and move on to the next file
+            # Allowing the FileExistsError to occur and handling it properly is an elegant solution for this problem
+            while True:
+                try:
+                    # This line actually actions the file renaming
+                    os.rename(os.path.join(directory, original_filename), os.path.join(directory, new_filename))
+                    break
+                except FileExistsError:
+                    # If filenames collided, keep track of how many have the same name
+                    filename_collision_counter += 1
+                    # Make the new_filename contain the base filename, suffix, incremental counter and file extension. This finalizes the filename
+                    new_filename = root + suffix + str(suffix_counter) + ext
+                    suffix_counter += 1
 
-        # Indefinite loop to keep trying to action the file renaming until it safely succeeds
-        # Once it succeeds, we break out of the loop and move on to the next file
-        # Allowing the FileExistsError to occur and handling it properly is an elegant solution for this problem
-        while True:
-            try:
-                # This line actually actions the file renaming
-                os.rename(os.path.join(directory, original_filename), os.path.join(directory, new_filename))
+            #----------End of filename collision checking code-----------
+
+            if original_filename == new_filename:
+                non_renamed_file_counter += 1
+
+            if original_filename == new_filename and num_files_in_directory == 1:
+                print("\nThe lone file named " + original_filename + " in the specified directory was not renamed, as this script was unnecessary for that file.\n")
                 break
-            except FileExistsError:
-                # If filenames collided, keep track of how many have the same name
-                filename_collision_counter += 1
-                # Make the new_filename contain the base filename, suffix, incremental counter and file extension. This finalizes the filename
-                new_filename = root + suffix + str(suffix_counter) + ext
-                suffix_counter += 1
 
-        #----------End of filename collision checking code-----------
-
-        if original_filename == new_filename:
-            non_renamed_file_counter += 1
-
-        if original_filename == new_filename and num_files_in_directory == 1:
-            print("\nThe lone file named " + original_filename + " in the specified directory was not renamed, as this script was unnecessary for that file.\n")
-            break
-
-        elif original_filename != new_filename:
-            print("\n" + original_filename + " has been renamed to " + new_filename)
+            elif original_filename != new_filename:
+                print("\n" + original_filename + " has been renamed to " + new_filename)
             
-        renamed_file_counter += 1
+            renamed_file_counter += 1
 
-    # Let the user know if filename collision occurred, and how it was mitigated if so
-    if filename_collision_counter > 1:
-        print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. An incremental suffix has been added to the necessary filenames to avoid errors.")
+        # Let the user know if filename collision occurred, and how it was mitigated if so
+        if filename_collision_counter > 1:
+            print("\nThe renaming process resulted in " + str(filename_collision_counter) + " files having the same name. An incremental suffix has been added to the necessary filenames to avoid errors.")
 
-    if (original_filename != new_filename and renamed_file_counter >= 1) or renamed_file_counter > non_renamed_file_counter:
-        print("\n" + str(renamed_file_counter - non_renamed_file_counter) + " file(s) renamed.")
+        if (original_filename != new_filename and renamed_file_counter >= 1) or renamed_file_counter > non_renamed_file_counter:
+            print("\n" + str(renamed_file_counter - non_renamed_file_counter) + " file(s) renamed.")
 
-    if non_renamed_file_counter >= 1 and num_files_in_directory > 1:
-        print("\n" + str(non_renamed_file_counter) + " file(s) in the specified directory were not renamed, as this script was unnecessary for them.\n")
+        if non_renamed_file_counter >= 1 and num_files_in_directory > 1:
+            print("\n" + str(non_renamed_file_counter) + " file(s) in the specified directory were not renamed, as this script was unnecessary for them.\n")
 
-#-------------------------------------------------
-#-----------End of script-------------------------
+#--------------------------------------------------------------
+#------------------End of renaming function--------------------
+
+def _main():
+    directory = input("Enter the full directory path in which you wish to have all files renamed: ")
+    rename_files(directory)
+
+# This lets the user import this program and use its functions as a module, instead of using the program as a script
+# However, they still can use this program as a standalone script with this conditional statement
+if __name__ == "__main__":
+    _main()
