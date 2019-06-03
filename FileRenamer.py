@@ -119,7 +119,7 @@ def filename_conversion(filename):
 
 # The print statements in this function are for user-friendliness 
 # The print statements' logic in the function relies upon a comparison between the old and new filename
-# The function will execute successfully even if the file wasn't technically renamed (due to it not meeting one of the rules from the above function)
+# The function will execute successfully even if the file wasn't technically renamed (due to it not meeting one of the rules from filename_conversion())
 # This means we have to write the code properly to print the messages we want properly
 
 def rename_files(directory):
@@ -140,7 +140,7 @@ def rename_files(directory):
         suffix_counter = 1 # Start at 1 for better user-readability
 
         for original_filename in directory_files:
-            # Get the new filename according to what my_rename() specified
+            # Get the new filename according to what filename_conversion() specified
             new_filename = filename_conversion(original_filename)
 
             #---------Start of filename collision checking code----------
