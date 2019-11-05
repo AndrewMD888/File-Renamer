@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on June 3, 2019
+# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on November 5, 2019
 # SEE THE README IN MY REPOSITORY FOR DOCUMENTATION
 
 # This program currently isn't compatible with Python 2, so line 1 ensures the user uses Python 3 if running via the terminal
@@ -123,10 +123,15 @@ def filename_conversion(filename):
 # This means we have to write the code properly to print the messages we want properly
 
 def rename_files(directory):
-    # Loops through the files in a directory and if files are found, they are added to a variable
-    # Then len() returns how many files were found in that variable, as an integer
-    num_files_in_directory = len([files for files in os.listdir(directory) if os.path.isfile(os.path.join(directory, files))])
-    directory_files = os.listdir(directory)
+    # Exception handling for the case where the user inputs an invalid directory
+    try:
+        # Loops through the files in a directory and if files are found, they are added to a variable
+        # Then len() returns how many files were found in that variable, as an integer
+        num_files_in_directory = len([files for files in os.listdir(directory) if os.path.isfile(os.path.join(directory, files))])
+        directory_files = os.listdir(directory)
+    except FileNotFoundError:
+        print("\nYou entered a non-existent directory. Restart the program and try again.\n")
+        return
 
     # Error message if no files are found
     if not directory_files:
