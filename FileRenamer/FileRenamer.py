@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# First created on February 19, 2018. Last updated on November 5, 2019
+# First created on February 19, 2018. Last updated on May 14, 2021.
 # SEE THE README IN THE REPOSITORY FOR DOCUMENTATION
 
 # This program is currently not compatible with Python 2, so line 1 ensures the user uses Python 3 if running via the terminal
@@ -16,100 +16,100 @@ def filename_conversion(filename):
     # The blanket rules (find and replace cases) I came up with for how I want this program to function. Key-value pairs.
     dictionary_rules = {'"': '', "'": "", " ": "_", '`': '', "!": "", ";": "", "–": "-", "@": "_at", "#": "", "$": "", "%": "", "^": "", "&": "_and", "|": "_or", "(": "", ")": "", "{": "", "}": "", "[": "", "]": ""}
 
-    # Create the actual dictionary for usage on strings
-    my_dictionary = dict((re.escape(key), value) for key, value in dictionary_rules.items())
+    # Create the actual dictionary for usage on filenames
+    filename_dictionary = dict((re.escape(key), value) for key, value in dictionary_rules.items())
 
     # Compiling the dictionary for usage with the .sub (search and replace) function
-    pattern = re.compile("|".join(my_dictionary.keys()))
+    pattern = re.compile("|".join(filename_dictionary.keys()))
     
     # Search and replace action on the filename string using the dictionary
-    usage_string1 = pattern.sub(lambda m: my_dictionary[re.escape(m.group(0))], filename)
+    filename_to_rename_pass1 = pattern.sub(lambda m: filename_dictionary[re.escape(m.group(0))], filename)
 
     # Logic checks to see if the first group to match in the string is not alphanumeric
     # Program goes into this code block if the first character of the string is not alphanumeric
-    if re.match(r'(^[A-Z]+)|(^[a-z]+)|(^[0-9]+)', usage_string1) is None:
+    if re.match(r'(^[A-Z]+)|(^[a-z]+)|(^[0-9]+)', filename_to_rename_pass1) is None:
         # If a match was not found (not alphanumeric), remove the non alphanumeric characters from the start of the string
-        start_of_string_trimmed = re.sub(r'^[^A-Za-z0-9]+', r'', usage_string1)
+        start_of_filename_trimmed = re.sub(r'^[^A-Za-z0-9]+', r'', filename_to_rename_pass1)
 
         # I chose 2 or more capital letters to match for below because this excludes first character capitalization, which is what I want here
-        usage_string2 = re.sub(r'(^[A-Z]{2,})', r'\1_', start_of_string_trimmed)
+        filename_to_rename_pass2 = re.sub(r'(^[A-Z]{2,})', r'\1_', start_of_filename_trimmed)
 
         # Inserts an underscore after the capturing group only if there are two or more consecutive lowercase letters in that group
         # Done so that the formatting of version numbers (for example, v1.03.54) is left as is
-        usage_string2 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', usage_string2)
+        filename_to_rename_pass2 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', filename_to_rename_pass2)
 
-        usage_string2 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', usage_string2)
+        filename_to_rename_pass2 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', filename_to_rename_pass2)
 
         # Inserts an underscore after a sequence of 2 or more characters and before a number
-        usage_string2 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', usage_string2)
+        filename_to_rename_pass2 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', filename_to_rename_pass2)
 
         # Gets the first character of the string for later usage
-        save = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', usage_string2).group()
+        first_char_in_filename = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', filename_to_rename_pass2).group()
 
-        # usage_string3 is not used in this conditional branch
-        # As such, I initialized usage_string3 to an empty list of two elements to avoid an exception in later conditional statements
+        # filename_to_rename_pass3 is not used in this conditional branch
+        # As such, I initialized filename_to_rename_pass3 to an empty list of two elements to avoid an exception in later conditional statements
         # Hardcoding works here due to those statement's conditions
-        usage_string3 = [None] * 2
+        filename_to_rename_pass3 = [None] * 2
 
         # Converts the first character of the string to lowercase for replacement in the string later on
-        start_of_string_formatter = str(save).lower()
+        start_of_filename_formatter = str(first_char_in_filename).lower()
 
     # This code branch is used if the first character of the string is alphanumeric
     else:
         # I chose 2 or more capital letters to match for below because this excludes first character capitalization, which I want excluded here
-        usage_string2 = re.sub(r'(^[A-Z]{2,})', r'\1_', usage_string1)
+        filename_to_rename_pass2 = re.sub(r'(^[A-Z]{2,})', r'\1_', filename_to_rename_pass1)
 
         # Gets the first character of the string for later usage
-        save = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', usage_string2).group()
+        first_char_in_filename = re.search(r'(^[A-Z0-9]+)|(^[a-z0-9]+)', filename_to_rename_pass2).group()
 
         # Inserts an underscore after the capturing group only if there are two or more consecutive lowercase letters in that group
         # Done so that the formatting of version numbers (for example, v1.03.54) is left as is
-        usage_string2 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', usage_string2)
+        filename_to_rename_pass2 = re.sub(r'((?<![A-Za-z\.])[a-z]{2,}(?=[a-z]*))', r'\1_', filename_to_rename_pass2)
 
-        usage_string2 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', usage_string2)
+        filename_to_rename_pass2 = re.sub(r'((?<![A-Za-z])[0-9](?=[A-Za-z]))', r'\1_', filename_to_rename_pass2)
 
         # Inserts an underscore after a sequence of 2 or more characters and before a number
-        usage_string2 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', usage_string2)
+        filename_to_rename_pass2 = re.sub(r'((?<![0-9])[A-Za-z]{2,}(?=[0-9]))', r'\1_', filename_to_rename_pass2)
 
-        # usage_string3 is now populated and is the same value as usage_string2
-        usage_string3 = usage_string2
+        # filename_to_rename_pass3 is now populated and is the same value as filename_to_rename_pass2
+        filename_to_rename_pass3 = filename_to_rename_pass2
 
         # Converts the first character of the string to lowercase for replacement in the string later on
-        start_of_string_formatter = str(save).lower()
+        start_of_filename_formatter = str(first_char_in_filename).lower()
 
-    # Checking to see if usage_string2 and usage_string3 have certain characters in the second position
-    if usage_string2[1] == "_" and usage_string3[1] != "_":
+    # Checking to see if filename_to_rename_pass2 and filename_to_rename_pass3 have certain characters in the second position
+    if filename_to_rename_pass2[1] == "_" and filename_to_rename_pass3[1] != "_":
         # Removes underscores where necessary
-        usage_string3 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', usage_string2)
+        filename_to_rename_pass3 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', filename_to_rename_pass2)
 
         # Appends an underscore into the correct place for capturing group 2 after removing prior undesirable underscores
-        final_string = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', usage_string3)
+        filename_to_rename_final = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', filename_to_rename_pass3)
     
-    elif usage_string3[1] == "_":
+    elif filename_to_rename_pass3[1] == "_":
         # Removes underscores where necessary
-        usage_string3 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', usage_string2)
+        filename_to_rename_pass3 = re.sub(r'((?<=[A-Za-z0-9_])[_]+(?![A-Za-z0-9]))', r'', filename_to_rename_pass2)
 
         # Appends an underscore into the correct place after removing prior undesirable underscores
-        final_string = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', usage_string3)
+        filename_to_rename_final = re.sub(r'((?<!^[a-z0-9])[_](?![A-Z0-9_]))|((?<!^[A-Z0-9])[_](?![a-z0-9][_]))', r'\2_', filename_to_rename_pass3)
 
     else:
-        # If everything was fine, we don't need usage_string3 and can put usage_string2's value directly into final_string for the next steps
-        final_string = usage_string2
+        # If everything was fine, we don't need filename_to_rename_pass3 and can put filename_to_rename_pass2's value directly into filename_to_rename_final for the next steps
+        filename_to_rename_final = filename_to_rename_pass2
 
     # The first character of the string in lowercase now replaces whatever character is in the first position at this point
-    final_string = re.sub(r'(^[A-Z]+)|(^([A-Z]+)([a-z]+\.))', start_of_string_formatter, final_string)
+    filename_to_rename_final = re.sub(r'(^[A-Z]+)|(^([A-Z]+)([a-z]+\.))', start_of_filename_formatter, filename_to_rename_final)
 
     # Inserts underscores between lowercase letters and capital words properly
     # The "r'\1\2_'" syntax is the proper way to add an underscore after capturing group 1 and 2
-    final_string = re.sub(r'([a-z](?=[A-Z]))|([A-Z]{2,}(?=[a-z]))', r'\1\2_', final_string).lower()
+    filename_to_rename_final = re.sub(r'([a-z](?=[A-Z]))|([A-Z]{2,}(?=[a-z]))', r'\1\2_', filename_to_rename_final).lower()
 
     # Removes any remaining extraneous/unnecessary underscores from the entire string
-    final_string = re.sub(r'((?<=[a-z])[_]+(?=[\.]))|((?<=[0-9])[_]+(?=[\.]))|((?<![a-z0-9])[_](?![A-Z]))', r'', final_string)
+    filename_to_rename_final = re.sub(r'((?<=[a-z])[_]+(?=[\.]))|((?<=[0-9])[_]+(?=[\.]))|((?<![a-z0-9])[_](?![A-Z]))', r'', filename_to_rename_final)
 
     # Removes any amount of underscores on either side of a hyphen to avoid multiple consecutive separator characters
-    final_string = re.sub(r'([_]{1,}(?=[-]))|((?<=[-])[_]{1,})', r'', final_string)
+    filename_to_rename_final = re.sub(r'([_]{1,}(?=[-]))|((?<=[-])[_]{1,})', r'', filename_to_rename_final)
 
-    return final_string
+    return filename_to_rename_final
 
 #--------------------------------------------------------------
 #-------------End of filename conversion function--------------
