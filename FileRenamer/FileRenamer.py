@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# First created by Andrew Dulichan on February 19, 2018. Last updated by Andrew Dulichan on November 5, 2019
-# SEE THE README IN MY REPOSITORY FOR DOCUMENTATION
+# First created on February 19, 2018. Last updated on November 5, 2019
+# SEE THE README IN THE REPOSITORY FOR DOCUMENTATION
 
-# This program currently isn't compatible with Python 2, so line 1 ensures the user uses Python 3 if running via the terminal
-# I also specified the encoding set for this file, just in case
+# This program is currently not compatible with Python 2, so line 1 ensures the user uses Python 3 if running via the terminal
+# I specified the encoding set for this file, just in case
 
 import os, re
 
